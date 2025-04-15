@@ -8,12 +8,16 @@ app = Flask(__name__)
 @app.route('/asset-verification/confirm')
 def fake_report():
     ip = request.remote_addr
-    emp_id = request.args.get('emp', 'unknown')
 
     try:
         hostname = socket.gethostbyaddr(ip)[0]
     except:
         hostname = "Unknown"
+
+    try:
+        emp_id = hostname.split('.')[0]  # Extracts 'IMT-L059' from 'IMT-L059.Itramas.local'
+    except:
+        emp_id = "unknown"
 
     log_entry = f"{datetime.datetime.now()} - IP: {ip} - Hostname: {hostname} - Employee: {emp_id} - User-Agent: {request.headers.get('User-Agent')}\n"
 
@@ -50,4 +54,3 @@ def show_logs():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
-
